@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="size">40dp</dimen>
+    <dimen name="marginHor">16dp</dimen>
+    <dimen name="marginVer">48dp</dimen>
+    <dimen name="titleSize">96sp</dimen>
+</resources>

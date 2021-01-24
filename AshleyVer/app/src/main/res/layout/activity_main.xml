@@ -1,0 +1,65 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/settings"
+        android:layout_width="@dimen/size"
+        android:layout_height="@dimen/size"
+        android:layout_marginStart="@dimen/marginHor"
+        android:contentDescription="@string/settings"
+        android:src="@drawable/ic_settings"
+        android:onClick="startGame"/>
+
+    <ImageButton
+        android:id="@+id/help"
+        android:layout_width="@dimen/size"
+        android:layout_height="@dimen/size"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/marginHor"
+        android:contentDescription="@string/help"
+        android:src="@drawable/ic_help"
+        android:onClick="startGame"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/gameTitle"
+            android:textColor="@android:color/holo_purple"
+            android:textSize="@dimen/titleSize" />
+
+        <Button
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:onClick="startGame"
+            android:text="@string/start"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="startGame"
+            android:text="@string/mode"
+            android:textColor="@android:color/white" />
+
+
+    </LinearLayout>
+</RelativeLayout>
