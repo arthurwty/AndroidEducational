@@ -8,6 +8,6 @@
 - 判断操作是否可行的functions：boolean canSlideDown(), boolean isGameOver()
 ### todo-list
 - [ ] View class
-- [ ] Game Board class
+- [ ] Game Board class (View group?)
 - [ ] swipe functions
 - [ ] check functions
