@@ -8,6 +8,7 @@
 - 判断操作是否可行的functions：boolean canSlideDown(), boolean isGameOver()
 ### todo-list
 - [ ] 基础界面功能
+- [ ] View class
 - [ ] onSwipeRight()
 - [ ] onSwipeLeft()
 - [ ] onSwipeUp()
