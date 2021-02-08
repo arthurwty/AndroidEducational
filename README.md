@@ -12,4 +12,4 @@
 - [ ] swipe functions
 - [ ] check functions
 #### problems?
-- 游戏界面的tile如果用textview感觉有点丑 是不是可以自定义View class 内涵 int value，String numVal， 还有颜色？然后在GameBoard class里操作 感觉这样可以写成GameBoard[][].
+- 游戏界面的tile如果用textview感觉有点丑 是不是可以自定义View class 内涵 int value，String numVal， 还有颜色？然后在GameBoard class里操作 感觉这样可以写成View[][].
