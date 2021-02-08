@@ -9,7 +9,6 @@
 ### todo-list
 - [ ] 基础界面功能
 - [ ] View class
-- [ ] onSwipeRight()
-- [ ] onSwipeLeft()
-- [ ] onSwipeUp()
-- [ ] onSwipeDown()
+- [ ] Game Board class
+- [ ] swipe functions
+- [ ] check functions
