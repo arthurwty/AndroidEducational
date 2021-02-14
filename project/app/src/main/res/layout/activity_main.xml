@@ -10,8 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/Sansation"
-
+        android:fontFamily="@font/sansation"
         android:includeFontPadding="false"
         android:shadowColor="@color/button_green"
         android:shadowDx="0"
@@ -39,6 +38,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/start"
+            android:onClick="startGame"
             android:textColor="@android:color/white"
             app:backgroundTint="@color/button_green"
             android:layout_weight="1"/>
