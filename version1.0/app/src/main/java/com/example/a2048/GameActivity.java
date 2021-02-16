@@ -116,14 +116,17 @@ public class GameActivity extends AppCompatActivity {
 
             public void onSwipeRight() {
                 Toast.makeText(GameActivity.this, "right", Toast.LENGTH_SHORT).show();
+                newBoard.handleRight();
             }
 
             public void onSwipeLeft() {
                 Toast.makeText(GameActivity.this, "left", Toast.LENGTH_SHORT).show();
+                newBoard.handleLeft();
             }
 
             public void onSwipeBottom() {
                 Toast.makeText(GameActivity.this, "bottom", Toast.LENGTH_SHORT).show();
+                newBoard.handleDown();
             }
         });
     }

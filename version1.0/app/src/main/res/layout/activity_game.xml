@@ -22,21 +22,25 @@
             <TextView
                 android:id="@+id/textView1"
                 android:layout_margin="10dp"
-                android:text="tile 1" />
+                android:text="tile 1"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/textView2"
+                android:layout_margin="10dp"
                 android:text="tile 2"
-                android:layout_margin="10dp"/>
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:text="tile 3"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/textView4"
                 android:text="tile 4"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
 
@@ -53,21 +57,25 @@
             <TextView
                 android:id="@+id/textView5"
                 android:layout_margin="10dp"
-                android:text="tile 5" />
+                android:text="tile 5"
+                android:textSize="24sp"/>
 
             <TextView
                 android:id="@+id/textView6"
                 android:text="tile 6"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/textView7"
                 android:text="tile 7"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/textView8"
                 android:text="tile 8"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
         </TableRow>
@@ -82,21 +90,25 @@
             <TextView
                 android:id="@+id/textView9"
                 android:layout_margin="10dp"
-                android:text="tile 9" />
+                android:text="tile 9"
+                android:textSize="24sp"/>
 
             <TextView
                 android:id="@+id/textView10"
                 android:text="tile 10"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/textView11"
                 android:text="tile 11"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/textView12"
                 android:text="tile 12"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
         </TableRow>
@@ -112,21 +124,25 @@
             <TextView
                 android:id="@+id/textView13"
                 android:layout_margin="10dp"
-                android:text="tile 13" />
+                android:text="tile 13"
+                android:textSize="24sp"/>
 
             <TextView
                 android:id="@+id/textView14"
                 android:text="tile 14"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/textView15"
                 android:text="tile 15"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/textView16"
                 android:text="tile 16"
+                android:textSize="24sp"
                 android:layout_margin="10dp"/>
 
         </TableRow>
