@@ -1,12 +1,16 @@
 package com.example.a2048;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -18,10 +22,11 @@ import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
 
-    String TAG = "GameActivity";
+    private static final String TAG = "GameActivity";
 
     TableLayout myTable;
     Map<String, TextView> myMap;
+    boolean continueLastGame;
 
     // region declaration
 
@@ -55,6 +60,7 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         myTable = findViewById(R.id.table);
+        continueLastGame = getIntent().getExtras().getBoolean("Continue");
 
         // region initialization
 
@@ -98,102 +104,29 @@ public class GameActivity extends AppCompatActivity {
 
         // endregion
 
-        // assign all tiles to be 0 at the beginning
-        String curr_tile;
-        for (int i = 1; i < 17; i++){
-            curr_tile = "view" + i;
-            myMap.get(curr_tile).setText("0");
-        }
-
-        // randomly assign two tiles to start the game
-        int randomNum1 = (int)(Math.random() * 16) + 1;
-        int randomNum2 = (int)(Math.random() * 16) + 1;
-        while (randomNum1 == randomNum2){
-            randomNum2 = (int)(Math.random() * 16) + 1;
-        }
-
-        String firstTile = "view" + randomNum1;
-        String secondTile = "view" + randomNum2;
-        myMap.get(firstTile).setText("2");
-        myMap.get(secondTile).setText("2");
-
+        GameBoard newBoard = new GameBoard(myMap);
+        newBoard.startGame();
 
         // set the onSwipeTouchListener
-        myTable.setOnTouchListener(new OnSwipeTouchListener(GameActivity.this){
+        myTable.setOnTouchListener(new OnSwipeTouchListener(GameActivity.this) {
             public void onSwipeTop() {
                 Toast.makeText(GameActivity.this, "top", Toast.LENGTH_SHORT).show();
-                handleUp(myMap);
+                newBoard.handleUp();
             }
+
             public void onSwipeRight() {
                 Toast.makeText(GameActivity.this, "right", Toast.LENGTH_SHORT).show();
             }
+
             public void onSwipeLeft() {
                 Toast.makeText(GameActivity.this, "left", Toast.LENGTH_SHORT).show();
             }
+
             public void onSwipeBottom() {
                 Toast.makeText(GameActivity.this, "bottom", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
-    /*
-     * Add a new tile with text "2" into the game board
-     */
-    public void addTile(Map<String, TextView> map) {
-        ArrayList<String> remainTile = new ArrayList<>();
-        String curr_value;
-
-        for (Map.Entry<String, TextView> pair: map.entrySet()) {
-            curr_value = pair.getValue().getText().toString();
-            if (curr_value.equals("0")){
-                remainTile.add(pair.getKey());
-            }
-        }
-
-        int randomIndex = (int) (Math.random() * remainTile.size());
-        String randomTile = remainTile.get(randomIndex);
-        map.get(randomTile).setText("2");
-
-    }
-
-
-    /*
-     * shift a tile up
-     */
-    public void shiftUp(String curr_tile, String up_tile, Map<String, TextView> map){
-        String curr_value = map.get(curr_tile).getText().toString();
-        String up_value = map.get(up_tile).getText().toString();
-
-        // shift up
-        if (!curr_value.equals("0") && up_value.equals("0")) {
-            map.get(up_tile).setText(curr_value);
-            map.get(curr_tile).setText("0");
-        }
-        // combine if values are the same
-        else if (!up_value.equals("0") && up_value.equals(curr_value)) {
-            int new_value = Integer.parseInt(curr_value) + Integer.parseInt(up_value);
-            map.get(up_tile).setText(String.valueOf(new_value));
-            map.get(curr_tile).setText("0");
-        }
-    }
-
-    /*
-     * Handle the swipe up case
-     */
-    public void handleUp(Map<String, TextView> map) {
-        String curr_tile;
-        String up_tile;
-
-        for (int j = 17; j > 8; j -= 4) {
-            for (int i = 5; i < j; i++){
-                curr_tile = "view" + i;
-                up_tile = "view" + (i-4);
-                shiftUp(curr_tile, up_tile, map);
-            }
-        }
-
-        // if game is not over, add one more tile TODO: need to modify this later
-        addTile(map);
-    }
 }
+
