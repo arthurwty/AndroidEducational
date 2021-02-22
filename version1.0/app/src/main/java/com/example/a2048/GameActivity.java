@@ -26,6 +26,7 @@ public class GameActivity extends AppCompatActivity {
 
     TableLayout myTable;
     Map<String, TextView> myMap;
+    Map<String, TextView> scoreMap;
     boolean continueLastGame;
 
     // region declaration
@@ -50,6 +51,8 @@ public class GameActivity extends AppCompatActivity {
     TextView view15;
     TextView view16;
 
+    TextView score;
+    TextView best_score;
 
     // endregion
 
@@ -84,6 +87,13 @@ public class GameActivity extends AppCompatActivity {
         view15 = findViewById(R.id.textView15);
         view16 = findViewById(R.id.textView16);
 
+        score = findViewById(R.id.score);
+        best_score = findViewById(R.id.best_score);
+
+        scoreMap = new HashMap<>();
+        scoreMap.put("score", score);
+        scoreMap.put("best_score", best_score);
+
         myMap = new HashMap<>();
         myMap.put("view1", view1);
         myMap.put("view2", view2);
@@ -104,7 +114,7 @@ public class GameActivity extends AppCompatActivity {
 
         // endregion
 
-        GameBoard newBoard = new GameBoard(myMap);
+        GameBoard newBoard = new GameBoard(myMap, scoreMap);
         newBoard.startGame();
 
         // set the onSwipeTouchListener

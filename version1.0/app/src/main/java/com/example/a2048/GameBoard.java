@@ -12,12 +12,15 @@ public class GameBoard {
 
     private static final String TAG = "GameBoard";
 
-    Map<String, Boolean> wasCombined;    // each tile cannot be combined twice in each round
+    int score;
 
+    Map<String, Boolean> wasCombined;    // each tile cannot be combined twice in each round
+    Map<String, TextView> scoreMap;
     Map<String, TextView> myMap;
     boolean tileMoved;  // keep track of whether to add tile or not
 
-    public GameBoard(Map<String, TextView> myMap) {
+    public GameBoard(Map<String, TextView> myMap, Map<String, TextView> scoreMap) {
+        score = 0;
         this.myMap = myMap;
         tileMoved = false;
         wasCombined = new HashMap<>();
@@ -25,6 +28,7 @@ public class GameBoard {
             String curr_str = "view" + i;
             wasCombined.put(curr_str, false);
         }
+        this.scoreMap = scoreMap;
     }
 
     /**
@@ -37,6 +41,8 @@ public class GameBoard {
             curr_tile = "view" + i;
             myMap.get(curr_tile).setText("0");
         }
+
+        scoreMap.get("score").setText(String.valueOf(score));
 
         // randomly assign two tiles to start the game
         int randomNum1 = (int)(Math.random() * 16) + 1;
@@ -102,6 +108,8 @@ public class GameBoard {
                 int new_value = Integer.parseInt(curr_value) + Integer.parseInt(next_value);
 
                 // TODO: compute score here
+                score += new_value;
+                scoreMap.get("score").setText(String.valueOf(score));
 
                 myMap.get(next_tile).setText(String.valueOf(new_value));
                 myMap.get(curr_tile).setText("0");
