@@ -1,5 +1,6 @@
 package com.example.a2048;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -7,6 +8,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 public class GameBoard {
 
@@ -19,9 +21,19 @@ public class GameBoard {
     Map<String, TextView> myMap;
     boolean tileMoved;  // keep track of whether to add tile or not
 
-    public GameBoard(Map<String, TextView> myMap, Map<String, TextView> scoreMap) {
+    // stack to store previous stages
+    Stack<Map<String,TextView>> mystack = new Stack<Map<String,TextView>>();
+
+    // counter to count how many steps the player played
+    int count;
+
+    // Context
+    Context context;
+
+    public GameBoard(Map<String, TextView> myMap, Map<String, TextView> scoreMap, Context context) {
         score = 0;
         this.myMap = myMap;
+        this.context = context;
         tileMoved = false;
         wasCombined = new HashMap<>();
         for (int i = 1; i < 17; i++){
@@ -55,6 +67,8 @@ public class GameBoard {
         String secondTile = "view" + randomNum2;
         myMap.get(firstTile).setText("2");
         myMap.get(secondTile).setText("2");
+        saveMap(myMap);
+        count = 0;
     }
 
     /**
@@ -141,6 +155,8 @@ public class GameBoard {
         // if game is not over, add one more tile; if nothing is moved, don't add
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
+        saveMap(myMap);
+        count++;
     }
 
     /**
@@ -164,6 +180,8 @@ public class GameBoard {
         // if game is not over, add one more tile; if nothing is moved, don't add
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
+        saveMap(myMap);
+        count++;
     }
 
     /**
@@ -193,6 +211,8 @@ public class GameBoard {
         // if game is not over, add one more tile; if nothing is moved, don't add
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
+        saveMap(myMap);
+        count++;
     }
 
     /**
@@ -222,6 +242,41 @@ public class GameBoard {
         // if game is not over, add one more tile; if nothing is moved, don't add
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
+        saveMap(myMap);
+        count++;
+    }
+
+    /**
+     * Helper method to copy map and push to the stack
+     */
+    public void saveMap(Map<String, TextView> map){
+        Map<String, TextView> newMap = new HashMap<>();
+        for (Map.Entry<String, TextView> entry : map.entrySet()) {
+            String k = entry.getKey();
+            TextView v = entry.getValue();
+            TextView newText = new TextView(context);
+            newMap.put(k,newText);
+            newMap.get(k).setText(v.getText());
+        }
+        mystack.push(newMap);
+    }
+    /**
+     * Undo method
+     */
+    public void undo(){
+        if (count > 0) {
+            mystack.pop();
+            for (Map.Entry<String, TextView> entry : mystack.peek().entrySet()) {
+                String k = entry.getKey();
+                TextView v = entry.getValue();
+                this.myMap.get(k).setText(v.getText());
+            }
+            count--;
+        }
+
+
+        // else TBD
+
     }
 
 

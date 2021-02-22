@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +30,10 @@ public class GameActivity extends AppCompatActivity {
     Map<String, TextView> myMap;
     Map<String, TextView> scoreMap;
     boolean continueLastGame;
+
+    // Button undo and restart
+    Button Undo_button;
+    Button Restart_button;
 
     // region declaration
 
@@ -114,7 +120,7 @@ public class GameActivity extends AppCompatActivity {
 
         // endregion
 
-        GameBoard newBoard = new GameBoard(myMap, scoreMap);
+        GameBoard newBoard = new GameBoard(myMap, scoreMap,this);
         newBoard.startGame();
 
         // set the onSwipeTouchListener
@@ -137,6 +143,22 @@ public class GameActivity extends AppCompatActivity {
             public void onSwipeBottom() {
                 Toast.makeText(GameActivity.this, "bottom", Toast.LENGTH_SHORT).show();
                 newBoard.handleDown();
+            }
+        });
+
+        Undo_button = findViewById(R.id.undo_button);
+        Restart_button = findViewById(R.id.restart_button);
+
+        Restart_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newBoard.startGame();
+            }
+        });
+        Undo_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newBoard.undo();
             }
         });
     }
