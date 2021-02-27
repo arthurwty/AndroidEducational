@@ -1,8 +1,8 @@
 # Android Educational Project
 ## Week 8-9 
 ### todo list for UI part
-- [ ]完成游戏界面的UI
-- [ ]在Mode里加入不同的color theme
+- [ ] 完成游戏界面的UI
+- [ ] 在Mode里加入不同的color theme
 ### todo list for logic
 - [ ] 完成continue game的功能
 - [ ] 完成best score的功能
