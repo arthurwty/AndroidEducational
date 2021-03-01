@@ -3,7 +3,6 @@ package com.example.a2048;
 import android.content.Context;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,15 +13,18 @@ public class GameBoard {
 
     private static final String TAG = "GameBoard";
 
-    int score;
+    int score;          // keep track of the current score in the game board
+    int best_score;
 
     Map<String, Boolean> wasCombined;    // each tile cannot be combined twice in each round
-    Map<String, TextView> scoreMap;
-    Map<String, TextView> myMap;
-    boolean tileMoved;  // keep track of whether to add tile or not
+    Map<String, TextView> scoreMap;     // contains score and best_score TextViews
+    Map<String, TextView> myMap;        // contains the TextViews of the 16 tiles
+    boolean tileMoved;      // keep track of whether to add tile or not
 
     // stack to store previous stages
-    Stack<Map<String,TextView>> mystack = new Stack<Map<String,TextView>>();
+    Stack<Map<String,TextView>> mystack = new Stack<>();
+    // stack to store previous scores
+    Stack<Integer> scoreStack = new Stack<>();
 
     // counter to count how many steps the player played
     int count;
@@ -30,43 +32,70 @@ public class GameBoard {
     // Context
     Context context;
 
+    /**
+     * Constructor of the GameBoard class
+     * @param myMap - a map of 16 pairs of <String, TextView>, 1 for each tile
+     * @param scoreMap -  a map of 2 pairs of <String, TextView>, score & best_score
+     * @param context
+     */
     public GameBoard(Map<String, TextView> myMap, Map<String, TextView> scoreMap, Context context) {
-        score = 0;
         this.myMap = myMap;
         this.context = context;
         tileMoved = false;
         wasCombined = new HashMap<>();
         for (int i = 1; i < 17; i++){
-            String curr_str = "view" + i;
-            wasCombined.put(curr_str, false);
+            wasCombined.put("view" + i, false);
         }
         this.scoreMap = scoreMap;
     }
 
     /**
      * Start the game
+     * @param score - start the game with this score
      */
-    public void startGame() {
-        // assign all tiles to be 0 at the beginning
-        String curr_tile;
-        for (int i = 1; i < 17; i++){
-            curr_tile = "view" + i;
-            myMap.get(curr_tile).setText("0");
+    public void startGame(String score) {
+        // if the score is not empty, continue last game
+        if (!score.equals("")) {
+            this.score = Integer.parseInt(score);
+        }
+        // else, start a new game
+        else {
+            this.score = 0;
+            // assign all tiles to be 0 at the beginning
+            String curr_tile;
+            for (int i = 1; i < 17; i++){
+                curr_tile = "view" + i;
+                myMap.get(curr_tile).setText("0");
+            }
+
+            // randomly assign two tiles to start the game
+            int randomNum1 = (int)(Math.random() * 16) + 1;
+            int randomNum2 = (int)(Math.random() * 16) + 1;
+            while (randomNum1 == randomNum2){
+                randomNum2 = (int)(Math.random() * 16) + 1;
+            }
+
+            String firstTile = "view" + randomNum1;
+            String secondTile = "view" + randomNum2;
+            myMap.get(firstTile).setText("2");
+            myMap.get(secondTile).setText("2");
+        }
+        // render the score TextView
+        scoreMap.get("score").setText(String.valueOf(this.score));
+
+        if (!scoreMap.get("best_score").getText().toString().equals("")) {
+            best_score = Integer.parseInt(scoreMap.get("best_score").getText().toString());
+        } else {
+            best_score = 0;
+            scoreMap.get("best_score").setText(String.valueOf(best_score));
         }
 
-        scoreMap.get("score").setText(String.valueOf(score));
 
-        // randomly assign two tiles to start the game
-        int randomNum1 = (int)(Math.random() * 16) + 1;
-        int randomNum2 = (int)(Math.random() * 16) + 1;
-        while (randomNum1 == randomNum2){
-            randomNum2 = (int)(Math.random() * 16) + 1;
-        }
+        // clear the scoreStack and push the starting score
+        scoreStack.clear();
+        scoreStack.push(this.score);
 
-        String firstTile = "view" + randomNum1;
-        String secondTile = "view" + randomNum2;
-        myMap.get(firstTile).setText("2");
-        myMap.get(secondTile).setText("2");
+        // save the starting map
         saveMap(myMap);
         count = 0;
     }
@@ -121,9 +150,15 @@ public class GameBoard {
             if (!wasCombined.get(curr_tile) && !wasCombined.get(next_tile) ) {
                 int new_value = Integer.parseInt(curr_value) + Integer.parseInt(next_value);
 
-                // TODO: compute score here
+                // compute score
                 score += new_value;
                 scoreMap.get("score").setText(String.valueOf(score));
+
+                // update best score
+                if (score > best_score) {
+                    best_score = score;
+                    scoreMap.get("best_score").setText(String.valueOf(score));
+                }
 
                 myMap.get(next_tile).setText(String.valueOf(new_value));
                 myMap.get(curr_tile).setText("0");
@@ -144,6 +179,7 @@ public class GameBoard {
             pair.setValue(false);
         }
 
+        score = scoreStack.peek();
         // three rounds
         for (int j = 17; j > 8; j -= 4) {
             for (int i = 5; i < j; i++){
@@ -156,6 +192,7 @@ public class GameBoard {
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
         saveMap(myMap);
+        scoreStack.push(score);
         count++;
     }
 
@@ -169,6 +206,7 @@ public class GameBoard {
             pair.setValue(false);
         }
 
+        score = scoreStack.peek();
         // three rounds
         for (int j = 0; j < 11; j += 4) {
             for (int i = 12; i > j; i--){
@@ -181,6 +219,7 @@ public class GameBoard {
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
         saveMap(myMap);
+        scoreStack.push(score);
         count++;
     }
 
@@ -194,6 +233,7 @@ public class GameBoard {
             pair.setValue(false);
         }
 
+        score = scoreStack.peek();
         // three rounds
         for (int j = 1; j < 4; j++) {
             for (int i = 15; ; ){
@@ -212,6 +252,7 @@ public class GameBoard {
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
         saveMap(myMap);
+        scoreStack.push(score);
         count++;
     }
 
@@ -225,6 +266,7 @@ public class GameBoard {
             pair.setValue(false);
         }
 
+        score = scoreStack.peek();
         // three rounds
         for (int j = 16; j > 13; j--) {
             for (int i = 2; ; ){
@@ -243,6 +285,7 @@ public class GameBoard {
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
         saveMap(myMap);
+        scoreStack.push(score);
         count++;
     }
 
@@ -272,9 +315,10 @@ public class GameBoard {
                 this.myMap.get(k).setText(v.getText());
             }
             count--;
+            // reverse score
+            scoreStack.pop();
+            scoreMap.get("score").setText(String.valueOf(scoreStack.peek()));
         }
-
-
         // else TBD
 
     }

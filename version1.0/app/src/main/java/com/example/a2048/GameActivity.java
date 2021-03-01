@@ -1,16 +1,11 @@
 package com.example.a2048;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.SharedPreferences;
-import android.os.Build;
+
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.preference.PreferenceManager;
+//import android.os.FileUtils;
+import org.apache.commons.io.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,14 +13,21 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
 
     private static final String TAG = "GameActivity";
 
+    List<String> textAndScore;      // used to save user data
+
+    // declaration of the table view and the maps
     TableLayout myTable;
     Map<String, TextView> myMap;
     Map<String, TextView> scoreMap;
@@ -97,8 +99,8 @@ public class GameActivity extends AppCompatActivity {
         best_score = findViewById(R.id.best_score);
 
         scoreMap = new HashMap<>();
-        scoreMap.put("score", score);
         scoreMap.put("best_score", best_score);
+        scoreMap.put("score", score);
 
         myMap = new HashMap<>();
         myMap.put("view1", view1);
@@ -118,10 +120,35 @@ public class GameActivity extends AppCompatActivity {
         myMap.put("view15", view15);
         myMap.put("view16", view16);
 
-        // endregion
+
+        if (continueLastGame) {
+            loadItems();
+            // restore the last map
+            for (int i = 0; i < 16; i++) {
+                myMap.get("view"+ (i+1)).setText(textAndScore.get(i));
+            }
+            score.setText(textAndScore.get(16));
+            best_score.setText(textAndScore.get(17));
+        } else {
+            try {
+                // retrieve the best score
+                loadItems();
+                if (textAndScore.size() > 0) {
+                    best_score.setText(textAndScore.get(17));
+                }
+                // then clear the local file
+                FileUtils.write(getDataFile(), "", Charset.defaultCharset());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         GameBoard newBoard = new GameBoard(myMap, scoreMap,this);
-        newBoard.startGame();
+        newBoard.startGame(score.getText().toString());
+
+
+        // endregion
+
 
         // set the onSwipeTouchListener
         myTable.setOnTouchListener(new OnSwipeTouchListener(GameActivity.this) {
@@ -152,7 +179,7 @@ public class GameActivity extends AppCompatActivity {
         Restart_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                newBoard.startGame();
+                newBoard.startGame("");
             }
         });
         Undo_button.setOnClickListener(new View.OnClickListener() {
@@ -163,5 +190,46 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Called when the game is exited.
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "stop the activity");
+        saveItems();
+    }
+
+    private File getDataFile(){
+        return new File(getFilesDir(), "data.txt");
+    }
+
+    // This function will load items by reading every line of the data file
+    private void loadItems() {
+        try {
+            // retrieve the last map from the local file
+            textAndScore = new ArrayList<>(FileUtils.readLines(getDataFile(), Charset.defaultCharset()));
+        } catch (IOException e) {
+            Log.e("MainActivity", "Error reading items", e);
+            textAndScore = new ArrayList<>();
+        }
+    }
+
+    // This function saves items by writing them into the data file
+    private void saveItems() {
+        try {
+            // store the current map, write to the local file
+            textAndScore = new ArrayList<>();
+            for (int i = 0; i < 16; i++) {
+                String curr_view = myMap.get("view"+(i+1)).getText().toString();
+                textAndScore.add(curr_view);
+            }
+            textAndScore.add(score.getText().toString());
+            textAndScore.add(best_score.getText().toString());
+            FileUtils.writeLines(getDataFile(), textAndScore);
+        } catch (IOException e) {
+            Log.e("MainActivity", "Error writing items", e);
+        }
+    }
 }
 
