@@ -5,40 +5,41 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Stack;
 
 public class GameBoard {
 
     private static final String TAG = "GameBoard";
 
     int score;          // keep track of the current score in the game board
-    int best_score;
+    int best_score;         // keep track of the best score in the game board
 
     Map<String, Boolean> wasCombined;    // each tile cannot be combined twice in each round
     Map<String, TextView> scoreMap;     // contains score and best_score TextViews
     Map<String, TextView> myMap;        // contains the TextViews of the 16 tiles
     boolean tileMoved;      // keep track of whether to add tile or not
 
-    // stack to store previous stages
-    Stack<Map<String,TextView>> mystack = new Stack<>();
-    // stack to store previous scores
-    Stack<Integer> scoreStack = new Stack<>();
+    Deque<Map<String,TextView>> myDeque;        // deque to store previous maps
+    Deque<Integer> scoreDeque;          // deque to store previous scores
+    Deque<Integer> bestScoreDeque;      // deque to store previous best scores
 
-    // counter to count how many steps the player played
-    int count;
-
-    // Context
+    int count;      // counter to count how many steps the player played / how many elements in the deque
     Context context;
 
     /**
      * Constructor of the GameBoard class
      * @param myMap - a map of 16 pairs of <String, TextView>, 1 for each tile
      * @param scoreMap -  a map of 2 pairs of <String, TextView>, score & best_score
-     * @param context
+     * @param context - current context (should be Game Activity)
+     * @param myDeque - explained above
+     * @param scoreDeque - explained above
+     * @param bestScoreDeque - explained above
      */
-    public GameBoard(Map<String, TextView> myMap, Map<String, TextView> scoreMap, Context context) {
+    public GameBoard(Map<String, TextView> myMap, Map<String, TextView> scoreMap, Context context,
+                     Deque<Map<String,TextView>> myDeque, Deque<Integer> scoreDeque, Deque<Integer> bestScoreDeque) {
         this.myMap = myMap;
         this.context = context;
         tileMoved = false;
@@ -47,16 +48,23 @@ public class GameBoard {
             wasCombined.put("view" + i, false);
         }
         this.scoreMap = scoreMap;
+        this.myDeque = myDeque;
+        this.scoreDeque = scoreDeque;
+        this.bestScoreDeque = bestScoreDeque;
     }
 
     /**
-     * Start the game
-     * @param score - start the game with this score
+     * Start/continue the game
+     * @param score - start/continue the game with this score
      */
     public void startGame(String score) {
         // if the score is not empty, continue last game
         if (!score.equals("")) {
+            // the 16 TextViews, score, and best score TextViews should already be rendered
+            // set the score and best score in the game board class
             this.score = Integer.parseInt(score);
+            best_score = Integer.parseInt(scoreMap.get("best_score").getText().toString());
+            count = scoreDeque.size();
         }
         // else, start a new game
         else {
@@ -75,29 +83,30 @@ public class GameBoard {
                 randomNum2 = (int)(Math.random() * 16) + 1;
             }
 
-            String firstTile = "view" + randomNum1;
-            String secondTile = "view" + randomNum2;
-            myMap.get(firstTile).setText("2");
-            myMap.get(secondTile).setText("2");
+            myMap.get("view" + randomNum1).setText("2");
+            myMap.get("view" + randomNum2).setText("2");
+
+            // clear all the Deque's
+            scoreDeque.clear();
+            myDeque.clear();
+            bestScoreDeque.clear();
+
+            // render the score TextView
+            scoreMap.get("score").setText(String.valueOf(this.score));
+
+            if (!scoreMap.get("best_score").getText().toString().equals("")) {
+                best_score = Integer.parseInt(scoreMap.get("best_score").getText().toString());
+            } else {
+                best_score = 0;
+                scoreMap.get("best_score").setText(String.valueOf(best_score));
+            }
+
+            // save the starting map, starting score, best score
+            saveMap(myMap);
+            saveScore();
+            count = 1;
         }
-        // render the score TextView
-        scoreMap.get("score").setText(String.valueOf(this.score));
 
-        if (!scoreMap.get("best_score").getText().toString().equals("")) {
-            best_score = Integer.parseInt(scoreMap.get("best_score").getText().toString());
-        } else {
-            best_score = 0;
-            scoreMap.get("best_score").setText(String.valueOf(best_score));
-        }
-
-
-        // clear the scoreStack and push the starting score
-        scoreStack.clear();
-        scoreStack.push(this.score);
-
-        // save the starting map
-        saveMap(myMap);
-        count = 0;
     }
 
     /**
@@ -116,7 +125,7 @@ public class GameBoard {
             }
         }
 
-        // of no remaining tiles, GAME OVER!!!!!
+        // if no remaining tiles, GAME OVER!!!!!
         // TODO: handle game over
         if (remainTile.size() == 0) {
             return;
@@ -168,7 +177,6 @@ public class GameBoard {
         }
     }
 
-
     /**
      * Handle the swipe up case
      */
@@ -179,7 +187,6 @@ public class GameBoard {
             pair.setValue(false);
         }
 
-        score = scoreStack.peek();
         // three rounds
         for (int j = 17; j > 8; j -= 4) {
             for (int i = 5; i < j; i++){
@@ -188,12 +195,7 @@ public class GameBoard {
                 shift(curr_tile, up_tile);
             }
         }
-        // if game is not over, add one more tile; if nothing is moved, don't add
-        // Will determine game over inside addTile()
-        if (tileMoved) addTile();
-        saveMap(myMap);
-        scoreStack.push(score);
-        count++;
+        afterSwipe();
     }
 
     /**
@@ -206,7 +208,6 @@ public class GameBoard {
             pair.setValue(false);
         }
 
-        score = scoreStack.peek();
         // three rounds
         for (int j = 0; j < 11; j += 4) {
             for (int i = 12; i > j; i--){
@@ -215,12 +216,7 @@ public class GameBoard {
                 shift(curr_tile, down_tile);
             }
         }
-        // if game is not over, add one more tile; if nothing is moved, don't add
-        // Will determine game over inside addTile()
-        if (tileMoved) addTile();
-        saveMap(myMap);
-        scoreStack.push(score);
-        count++;
+        afterSwipe();
     }
 
     /**
@@ -233,7 +229,6 @@ public class GameBoard {
             pair.setValue(false);
         }
 
-        score = scoreStack.peek();
         // three rounds
         for (int j = 1; j < 4; j++) {
             for (int i = 15; ; ){
@@ -248,12 +243,7 @@ public class GameBoard {
                 } else i -= 4;
             }
         }
-        // if game is not over, add one more tile; if nothing is moved, don't add
-        // Will determine game over inside addTile()
-        if (tileMoved) addTile();
-        saveMap(myMap);
-        scoreStack.push(score);
-        count++;
+        afterSwipe();
     }
 
     /**
@@ -266,7 +256,6 @@ public class GameBoard {
             pair.setValue(false);
         }
 
-        score = scoreStack.peek();
         // three rounds
         for (int j = 16; j > 13; j--) {
             for (int i = 2; ; ){
@@ -281,16 +270,25 @@ public class GameBoard {
                 } else i += 4;
             }
         }
+        afterSwipe();
+    }
+
+    /**
+     * Helper method that will run every time after the user swipes
+     */
+    public void afterSwipe() {
         // if game is not over, add one more tile; if nothing is moved, don't add
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
         saveMap(myMap);
-        scoreStack.push(score);
         count++;
+        saveScore();
     }
 
     /**
-     * Helper method to copy map and push to the stack
+     * Helper method that will save the current map to the map Deque
+     * Only save the 10 latest changes
+     * @param map - the input current map
      */
     public void saveMap(Map<String, TextView> map){
         Map<String, TextView> newMap = new HashMap<>();
@@ -301,28 +299,46 @@ public class GameBoard {
             newMap.put(k,newText);
             newMap.get(k).setText(v.getText());
         }
-        mystack.push(newMap);
+        if (myDeque.size() == 10) {
+            myDeque.removeFirst();
+        }
+        myDeque.addLast(newMap);
     }
+
+    /**
+     * Helper method to save the 10 latest scores
+     */
+    public void saveScore() {
+        if (scoreDeque.size() == 10) {
+            scoreDeque.removeFirst();
+            bestScoreDeque.removeFirst();
+            count = 10;
+        }
+        scoreDeque.addLast(score);
+        bestScoreDeque.addLast(best_score);
+    }
+
     /**
      * Undo method
      */
     public void undo(){
-        if (count > 0) {
-            mystack.pop();
-            for (Map.Entry<String, TextView> entry : mystack.peek().entrySet()) {
+        if (count > 1) {
+            Log.i(TAG, "count: " + count);
+            myDeque.removeLast();
+            for (Map.Entry<String, TextView> entry : myDeque.peekLast().entrySet()) {
                 String k = entry.getKey();
                 TextView v = entry.getValue();
                 this.myMap.get(k).setText(v.getText());
             }
             count--;
             // reverse score
-            scoreStack.pop();
-            scoreMap.get("score").setText(String.valueOf(scoreStack.peek()));
+            scoreDeque.removeLast();
+            score = scoreDeque.peekLast();
+            scoreMap.get("score").setText(String.valueOf(score));
+            bestScoreDeque.removeLast();
+            best_score = bestScoreDeque.peekLast();
+            scoreMap.get("best_score").setText(String.valueOf(best_score));
         }
-        // else TBD
-
     }
-
-
 
 }
