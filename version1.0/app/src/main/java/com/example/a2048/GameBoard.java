@@ -1,112 +1,54 @@
 package com.example.a2048;
 
-import android.content.Context;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class GameBoard {
 
     private static final String TAG = "GameBoard";
 
-    int score;          // keep track of the current score in the game board
-    int best_score;         // keep track of the best score in the game board
-
     Map<String, Boolean> wasCombined;    // each tile cannot be combined twice in each round
-    Map<String, TextView> scoreMap;     // contains score and best_score TextViews
-    Map<String, TextView> myMap;        // contains the TextViews of the 16 tiles
-    boolean tileMoved;      // keep track of whether to add tile or not
 
-    Deque<Map<String,TextView>> myDeque;        // deque to store previous maps
-    Deque<Integer> scoreDeque;          // deque to store previous scores
-    Deque<Integer> bestScoreDeque;      // deque to store previous best scores
+    Map<String, TextView> myMap;
+    boolean tileMoved;  // keep track of whether to add tile or not
 
-    int count;      // counter to count how many steps the player played / how many elements in the deque
-    Context context;
-
-    /**
-     * Constructor of the GameBoard class
-     * @param myMap - a map of 16 pairs of <String, TextView>, 1 for each tile
-     * @param scoreMap -  a map of 2 pairs of <String, TextView>, score & best_score
-     * @param context - current context (should be Game Activity)
-     * @param myDeque - explained above
-     * @param scoreDeque - explained above
-     * @param bestScoreDeque - explained above
-     */
-    public GameBoard(Map<String, TextView> myMap, Map<String, TextView> scoreMap, Context context,
-                     Deque<Map<String,TextView>> myDeque, Deque<Integer> scoreDeque, Deque<Integer> bestScoreDeque) {
+    public GameBoard(Map<String, TextView> myMap) {
         this.myMap = myMap;
-        this.context = context;
         tileMoved = false;
         wasCombined = new HashMap<>();
         for (int i = 1; i < 17; i++){
-            wasCombined.put("view" + i, false);
+            String curr_str = "view" + i;
+            wasCombined.put(curr_str, false);
         }
-        this.scoreMap = scoreMap;
-        this.myDeque = myDeque;
-        this.scoreDeque = scoreDeque;
-        this.bestScoreDeque = bestScoreDeque;
     }
 
     /**
-     * Start/continue the game
-     * @param score - start/continue the game with this score
+     * Start the game
      */
-    public void startGame(String score) {
-        // if the score is not empty, continue last game
-        if (!score.equals("")) {
-            // the 16 TextViews, score, and best score TextViews should already be rendered
-            // set the score and best score in the game board class
-            this.score = Integer.parseInt(score);
-            best_score = Integer.parseInt(scoreMap.get("best_score").getText().toString());
-            count = scoreDeque.size();
-        }
-        // else, start a new game
-        else {
-            this.score = 0;
-            // assign all tiles to be 0 at the beginning
-            String curr_tile;
-            for (int i = 1; i < 17; i++){
-                curr_tile = "view" + i;
-                myMap.get(curr_tile).setText("0");
-            }
-
-            // randomly assign two tiles to start the game
-            int randomNum1 = (int)(Math.random() * 16) + 1;
-            int randomNum2 = (int)(Math.random() * 16) + 1;
-            while (randomNum1 == randomNum2){
-                randomNum2 = (int)(Math.random() * 16) + 1;
-            }
-
-            myMap.get("view" + randomNum1).setText("2");
-            myMap.get("view" + randomNum2).setText("2");
-
-            // clear all the Deque's
-            scoreDeque.clear();
-            myDeque.clear();
-            bestScoreDeque.clear();
-
-            // render the score TextView
-            scoreMap.get("score").setText(String.valueOf(this.score));
-
-            if (!scoreMap.get("best_score").getText().toString().equals("")) {
-                best_score = Integer.parseInt(scoreMap.get("best_score").getText().toString());
-            } else {
-                best_score = 0;
-                scoreMap.get("best_score").setText(String.valueOf(best_score));
-            }
-
-            // save the starting map, starting score, best score
-            saveMap(myMap);
-            saveScore();
-            count = 1;
+    public void startGame() {
+        // assign all tiles to be 0 at the beginning
+        String curr_tile;
+        for (int i = 1; i < 17; i++){
+            curr_tile = "view" + i;
+            myMap.get(curr_tile).setText("0");
         }
 
+        // randomly assign two tiles to start the game
+        int randomNum1 = (int)(Math.random() * 16) + 1;
+        int randomNum2 = (int)(Math.random() * 16) + 1;
+        while (randomNum1 == randomNum2){
+            randomNum2 = (int)(Math.random() * 16) + 1;
+        }
+
+        String firstTile = "view" + randomNum1;
+        String secondTile = "view" + randomNum2;
+        myMap.get(firstTile).setText("2");
+        myMap.get(secondTile).setText("2");
     }
 
     /**
@@ -125,7 +67,7 @@ public class GameBoard {
             }
         }
 
-        // if no remaining tiles, GAME OVER!!!!!
+        // of no remaining tiles, GAME OVER!!!!!
         // TODO: handle game over
         if (remainTile.size() == 0) {
             return;
@@ -159,15 +101,7 @@ public class GameBoard {
             if (!wasCombined.get(curr_tile) && !wasCombined.get(next_tile) ) {
                 int new_value = Integer.parseInt(curr_value) + Integer.parseInt(next_value);
 
-                // compute score
-                score += new_value;
-                scoreMap.get("score").setText(String.valueOf(score));
-
-                // update best score
-                if (score > best_score) {
-                    best_score = score;
-                    scoreMap.get("best_score").setText(String.valueOf(score));
-                }
+                // TODO: compute score here
 
                 myMap.get(next_tile).setText(String.valueOf(new_value));
                 myMap.get(curr_tile).setText("0");
@@ -176,6 +110,7 @@ public class GameBoard {
             }
         }
     }
+
 
     /**
      * Handle the swipe up case
@@ -195,7 +130,9 @@ public class GameBoard {
                 shift(curr_tile, up_tile);
             }
         }
-        afterSwipe();
+        // if game is not over, add one more tile; if nothing is moved, don't add
+        // Will determine game over inside addTile()
+        if (tileMoved) addTile();
     }
 
     /**
@@ -216,7 +153,9 @@ public class GameBoard {
                 shift(curr_tile, down_tile);
             }
         }
-        afterSwipe();
+        // if game is not over, add one more tile; if nothing is moved, don't add
+        // Will determine game over inside addTile()
+        if (tileMoved) addTile();
     }
 
     /**
@@ -243,7 +182,9 @@ public class GameBoard {
                 } else i -= 4;
             }
         }
-        afterSwipe();
+        // if game is not over, add one more tile; if nothing is moved, don't add
+        // Will determine game over inside addTile()
+        if (tileMoved) addTile();
     }
 
     /**
@@ -270,75 +211,11 @@ public class GameBoard {
                 } else i += 4;
             }
         }
-        afterSwipe();
-    }
-
-    /**
-     * Helper method that will run every time after the user swipes
-     */
-    public void afterSwipe() {
         // if game is not over, add one more tile; if nothing is moved, don't add
         // Will determine game over inside addTile()
         if (tileMoved) addTile();
-        saveMap(myMap);
-        count++;
-        saveScore();
     }
 
-    /**
-     * Helper method that will save the current map to the map Deque
-     * Only save the 10 latest changes
-     * @param map - the input current map
-     */
-    public void saveMap(Map<String, TextView> map){
-        Map<String, TextView> newMap = new HashMap<>();
-        for (Map.Entry<String, TextView> entry : map.entrySet()) {
-            String k = entry.getKey();
-            TextView v = entry.getValue();
-            TextView newText = new TextView(context);
-            newMap.put(k,newText);
-            newMap.get(k).setText(v.getText());
-        }
-        if (myDeque.size() == 10) {
-            myDeque.removeFirst();
-        }
-        myDeque.addLast(newMap);
-    }
 
-    /**
-     * Helper method to save the 10 latest scores
-     */
-    public void saveScore() {
-        if (scoreDeque.size() == 10) {
-            scoreDeque.removeFirst();
-            bestScoreDeque.removeFirst();
-            count = 10;
-        }
-        scoreDeque.addLast(score);
-        bestScoreDeque.addLast(best_score);
-    }
-
-    /**
-     * Undo method
-     */
-    public void undo(){
-        if (count > 1) {
-            Log.i(TAG, "count: " + count);
-            myDeque.removeLast();
-            for (Map.Entry<String, TextView> entry : myDeque.peekLast().entrySet()) {
-                String k = entry.getKey();
-                TextView v = entry.getValue();
-                this.myMap.get(k).setText(v.getText());
-            }
-            count--;
-            // reverse score
-            scoreDeque.removeLast();
-            score = scoreDeque.peekLast();
-            scoreMap.get("score").setText(String.valueOf(score));
-            bestScoreDeque.removeLast();
-            best_score = bestScoreDeque.peekLast();
-            scoreMap.get("best_score").setText(String.valueOf(best_score));
-        }
-    }
 
 }
