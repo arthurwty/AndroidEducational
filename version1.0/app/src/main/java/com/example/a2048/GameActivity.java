@@ -1,34 +1,50 @@
 package com.example.a2048;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.SharedPreferences;
-import android.os.Build;
+
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.preference.PreferenceManager;
+//import android.os.FileUtils;
+import org.apache.commons.io.FileUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class GameActivity extends AppCompatActivity {
 
     private static final String TAG = "GameActivity";
 
+    GameBoard newBoard;
+    List<String> textAndScore;      // used to save user data
+
+    // declaration of the table view and the maps
     TableLayout myTable;
     Map<String, TextView> myMap;
-    boolean continueLastGame;
+    Map<String, TextView> scoreMap;
+    boolean continueLastGame;       // indicate whether to continue last game
+
+    Deque<Map<String,TextView>> myDeque;       // deque to store previous maps
+    Deque<Integer> scoreDeque;       // deque to store previous scores
+    Deque<Integer> bestScoreDeque;      // deque to store previous best scores
 
     // region declaration
+
+    // Button undo and restart
+    Button Undo_button;
+    Button Restart_button;
 
     TextView view1;
     TextView view2;
@@ -50,6 +66,8 @@ public class GameActivity extends AppCompatActivity {
     TextView view15;
     TextView view16;
 
+    TextView score;
+    TextView best_score;
 
     // endregion
 
@@ -68,17 +86,14 @@ public class GameActivity extends AppCompatActivity {
         view2 = findViewById(R.id.textView2);
         view3 = findViewById(R.id.textView3);
         view4 = findViewById(R.id.textView4);
-
         view5 = findViewById(R.id.textView5);
         view6 = findViewById(R.id.textView6);
         view7 = findViewById(R.id.textView7);
         view8 = findViewById(R.id.textView8);
-
         view9 = findViewById(R.id.textView9);
         view10 = findViewById(R.id.textView10);
         view11 = findViewById(R.id.textView11);
         view12 = findViewById(R.id.textView12);
-
         view13 = findViewById(R.id.textView13);
         view14 = findViewById(R.id.textView14);
         view15 = findViewById(R.id.textView15);
@@ -102,34 +117,140 @@ public class GameActivity extends AppCompatActivity {
         myMap.put("view15", view15);
         myMap.put("view16", view16);
 
+        score = findViewById(R.id.score);
+        best_score = findViewById(R.id.best_score);
+
+        scoreMap = new HashMap<>();
+        scoreMap.put("best_score", best_score);
+        scoreMap.put("score", score);
+
+        myDeque = new LinkedList<>();
+        scoreDeque = new LinkedList<>();
+        bestScoreDeque = new LinkedList<>();
+
         // endregion
 
-        GameBoard newBoard = new GameBoard(myMap);
-        newBoard.startGame();
+        loadItems();
+        int len = textAndScore.size();
+
+        if (continueLastGame) {
+            // retrieve the previous maps: first 16th are the tiles, 17th score, 18th best score
+            for (int i = 0; i < len; ) {
+                Map<String, TextView> curr_map = new HashMap<>();
+                for (int j = 0; j < 18; j++, i++) {
+                    // retrieve the previous scores
+                    if (j == 16) {
+                        scoreDeque.addLast(Integer.parseInt(textAndScore.get(i)));
+                    } else if ( j == 17) {
+                        bestScoreDeque.addLast(Integer.parseInt(textAndScore.get(i)));
+                    } else {
+                        TextView newText = new TextView(this);      // construct a new TextView
+                        curr_map.put("view"+ (j+1), newText);
+                        curr_map.get("view"+ (j+1)).setText(textAndScore.get(i));
+                    }
+                }
+                myDeque.addLast(curr_map);      // inflate the map deque with all previous maps
+            }
+
+            // retrieve the last map and assign it to myMap
+            for (int i = len - 18, j = 1; i < len-2; i++, j++){
+                myMap.get("view"+j).setText(textAndScore.get(i));
+            }
+
+            // retrieve the score of the last map
+            score.setText(textAndScore.get(len-2));
+        }
+
+        // retrieve the best score
+        if (textAndScore.size() > 0) {
+            best_score.setText(textAndScore.get(len-1));
+        }
+
+        newBoard = new GameBoard(myMap, scoreMap,this, myDeque, scoreDeque, bestScoreDeque);
+        newBoard.startGame(score.getText().toString());
 
         // set the onSwipeTouchListener
         myTable.setOnTouchListener(new OnSwipeTouchListener(GameActivity.this) {
             public void onSwipeTop() {
-                Toast.makeText(GameActivity.this, "top", Toast.LENGTH_SHORT).show();
                 newBoard.handleUp();
             }
 
             public void onSwipeRight() {
-                Toast.makeText(GameActivity.this, "right", Toast.LENGTH_SHORT).show();
                 newBoard.handleRight();
             }
 
             public void onSwipeLeft() {
-                Toast.makeText(GameActivity.this, "left", Toast.LENGTH_SHORT).show();
                 newBoard.handleLeft();
             }
 
             public void onSwipeBottom() {
-                Toast.makeText(GameActivity.this, "bottom", Toast.LENGTH_SHORT).show();
                 newBoard.handleDown();
+            }
+        });
+
+        Undo_button = findViewById(R.id.undo_button);
+        Restart_button = findViewById(R.id.restart_button);
+
+        Restart_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newBoard.startGame("");
+            }
+        });
+        Undo_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newBoard.undo();
             }
         });
     }
 
+    /**
+     * Called when the game is exited.
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "stop the activity");
+        saveUponExit();
+    }
+
+    private File getDataFile(){
+        return new File(getFilesDir(), "data.txt");
+    }
+
+    // This function will load items by reading every line of the data file
+    private void loadItems() {
+        try {
+            // retrieve data from the local file
+            textAndScore = new ArrayList<>(FileUtils.readLines(getDataFile(), Charset.defaultCharset()));
+            Log.i(TAG, "length of the loaded data file: " + textAndScore.size());
+        } catch (IOException e) {
+            Log.e("GameActivity", "Error reading items", e);
+            textAndScore = new ArrayList<>();
+        }
+    }
+
+
+    // save the games when the user exit the game
+    private void saveUponExit() {
+        // save the data from all Deque's into the textAndScore array list
+        textAndScore = new ArrayList<>();
+        while(newBoard.myDeque.peekFirst() != null) {
+            Map<String, TextView> curr_map = newBoard.myDeque.removeFirst();
+            for (int i = 1; i < curr_map.size() + 1; i++) {
+                textAndScore.add(curr_map.get("view"+i).getText().toString());
+            }
+            textAndScore.add(String.valueOf(newBoard.scoreDeque.removeFirst()));
+            textAndScore.add(String.valueOf(newBoard.bestScoreDeque.removeFirst()));
+        }
+        // write the updated data into the data file
+        try {
+            FileUtils.writeLines(getDataFile(), textAndScore);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
 

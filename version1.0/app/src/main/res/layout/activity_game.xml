@@ -11,13 +11,14 @@
         android:id="@+id/restart_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="160dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_toStartOf="@+id/undo_button"
-        android:layout_toLeftOf="@+id/undo_button"
+        android:layout_below="@+id/best_score_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="175dp"
+        android:layout_marginLeft="175dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         android:text="@string/restart"
         app:backgroundTint="#09AEAE" />
 
@@ -25,12 +26,12 @@
         android:id="@+id/undo_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/best_score_label"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="160dp"
-        android:layout_marginEnd="62dp"
-        android:layout_marginRight="62dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
         android:text="@string/undo"
         app:backgroundTint="#09AEAE" />
 
@@ -38,16 +39,17 @@
         android:id="@+id/table"
         android:layout_width="361dp"
         android:layout_height="341dp"
+        android:layout_below="@+id/restart_button"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="31dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginLeft="31dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginBottom="145dp"
         android:background="#C1EAF0">
 
 
@@ -65,6 +67,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 1"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -74,6 +79,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 2"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -83,6 +91,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 3"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -92,6 +103,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 4"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
 
@@ -111,6 +125,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 5"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -120,6 +137,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 6"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -129,6 +149,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 7"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -138,6 +161,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 8"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
         </TableRow>
@@ -156,6 +182,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 9"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -165,6 +194,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 10"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -174,6 +206,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 11"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -183,6 +218,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 12"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
         </TableRow>
@@ -202,6 +240,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 13"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -211,6 +252,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 14"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -220,6 +264,9 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 15"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
             <TextView
@@ -229,12 +276,16 @@
                 android:layout_margin="10dp"
                 android:background="#16D3D3"
                 android:text="tile 16"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:textSize="24sp" />
 
         </TableRow>
 
 
     </TableLayout>
+
 
     <TextView
         android:id="@+id/score_label"
@@ -243,37 +294,17 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_centerInParent="false"
-        android:layout_marginStart="45dp"
-        android:layout_marginLeft="45dp"
-        android:layout_marginTop="107dp"
+        android:layout_marginStart="46dp"
+        android:layout_marginLeft="46dp"
+        android:layout_marginTop="89dp"
         android:background="#09AEAE"
-        android:gravity="center"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
         android:text="Score:"
         android:textColor="#F2F2F2"
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/best_score_label"
-        android:layout_width="180dp"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="176dp"
-        android:layout_marginLeft="176dp"
-        android:layout_marginTop="107dp"
-        android:layout_marginEnd="66dp"
-        android:layout_marginRight="66dp"
-        android:background="#09AEAE"
-        android:gravity="center|center_horizontal"
-        android:text="Best score:"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/score"
@@ -284,17 +315,47 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="84dp"
         android:layout_marginLeft="84dp"
-        android:layout_marginTop="27dp" />
+        android:layout_marginTop="144dp"
+        android:hint="240"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/best_score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/best_score_label"
+        android:layout_width="199dp"
+        android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="102dp"
-        android:layout_marginLeft="102dp"
-        android:layout_marginTop="66dp" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="174dp"
+        android:layout_marginLeft="174dp"
+        android:layout_marginTop="90dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginRight="38dp"
+        android:background="#09AEAE"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="Best score:"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/best_score"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/best_score_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="288dp"
+        android:layout_marginLeft="288dp"
+        android:layout_marginTop="17dp"
+        android:hint="240"
+        android:textStyle="bold"
+        android:textColor="@color/white" />
+
 
 </RelativeLayout>
