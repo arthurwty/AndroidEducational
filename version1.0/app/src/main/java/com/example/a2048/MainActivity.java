@@ -21,13 +21,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new_game_button = findViewById(R.id.New_game_button);
-        continue_button = findViewById(R.id.continue_button);
-        mode_button = findViewById(R.id.mode_button);
-
-        new_game_button.setBackgroundTintList(null);
-        continue_button.setBackgroundTintList(null);
-        mode_button.setBackgroundTintList(null);
+        new_game_button = findViewById(R.id.start);
+        continue_button = findViewById(R.id.continue_game);
+        mode_button = findViewById(R.id.mode);
 
         new_game_button.setOnClickListener(new View.OnClickListener() {
             @Override
